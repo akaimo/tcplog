@@ -4,6 +4,8 @@ import (
 	"log"
 	"github.com/google/gopacket/pcap"
 	"fmt"
+	"time"
+	"github.com/google/gopacket"
 )
 
 func main() {
@@ -20,5 +22,14 @@ func main() {
 			fmt.Println("- NetMask: " + address.Netmask.String())
 		}
 		fmt.Println("")
+	}
+
+	handle, err := pcap.OpenLive("en0", 1024, false, 30*time.Second)
+	if err != nil {
+		log.Fatal(err)
+	}
+	packetSource := gopacket.NewPacketSource(handle, handle.LinkType())
+	for packet := range packetSource.Packets() {
+		fmt.Println(packet.String())
 	}
 }
