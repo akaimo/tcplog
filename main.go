@@ -4,7 +4,6 @@ import (
 	"log"
 	"github.com/google/gopacket/pcap"
 	"fmt"
-	"time"
 	"github.com/google/gopacket"
 )
 
@@ -24,7 +23,7 @@ func main() {
 		fmt.Println("")
 	}
 
-	handle, err := pcap.OpenLive("en0", 1024, false, 30*time.Second)
+	handle, err := pcap.OpenLive("en0", int32(0xFFFF), true, pcap.BlockForever)
 	if err != nil {
 		log.Fatal(err)
 	}
