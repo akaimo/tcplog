@@ -44,6 +44,7 @@ func logPacket(ch chan string, device string) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer handle.Close()
 
 	packetSource := gopacket.NewPacketSource(handle, handle.LinkType())
 	for packet := range packetSource.Packets() {
