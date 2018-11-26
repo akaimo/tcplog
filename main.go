@@ -24,7 +24,11 @@ func main() {
 		fmt.Println("")
 	}
 
-	handle, err := pcap.OpenLive("en0", int32(0xFFFF), true, pcap.BlockForever)
+	logPacket("en0")
+}
+
+func logPacket(device string) {
+	handle, err := pcap.OpenLive(device, int32(0xFFFF), true, pcap.BlockForever)
 	if err != nil {
 		log.Fatal(err)
 	}
