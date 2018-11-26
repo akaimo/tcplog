@@ -27,6 +27,14 @@ func main() {
 	logPacket("en0")
 }
 
+type Packet struct {
+	Device string
+	SourceIP string
+	DestinationIP string
+	SourceMac string
+	DestinationMac string
+}
+
 func logPacket(device string) {
 	handle, err := pcap.OpenLive(device, int32(0xFFFF), true, pcap.BlockForever)
 	if err != nil {
@@ -35,20 +43,22 @@ func logPacket(device string) {
 
 	packetSource := gopacket.NewPacketSource(handle, handle.LinkType())
 	for packet := range packetSource.Packets() {
-		for _, layer := range packet.Layers() {
-			fmt.Println(layer.LayerType())
-		}
+		//for _, layer := range packet.Layers() {
+		//	fmt.Println(layer.LayerType())
+		//}
+		p := Packet{Device:device}
 		ethernetLayer := packet.Layer(layers.LayerTypeEthernet)
 		if ethernetLayer != nil {
-			fmt.Println("[*] Ethernet Layer")
 			eth, _ := ethernetLayer.(*layers.Ethernet)
-			fmt.Printf("\t%s -> %s\n", eth.SrcMAC, eth.DstMAC)
+			p.SourceMac = eth.SrcMAC.String()
+			p.DestinationMac = eth.DstMAC.String()
 		}
 		ipLayer := packet.Layer(layers.LayerTypeIPv4)
 		if ipLayer != nil {
-			fmt.Println("[*] IPv4 layer")
 			ip, _ := ipLayer.(*layers.IPv4)
-			fmt.Printf("\t%s -> %s\n", ip.SrcIP, ip.DstIP)
+			p.SourceIP = ip.SrcIP.String()
+			p.DestinationIP = ip.DstIP.String()
 		}
+		fmt.Printf("%+v\n", p)
 	}
 }
