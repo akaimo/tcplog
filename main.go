@@ -50,6 +50,14 @@ func logPacket(ch chan string, device string) {
 		//for _, layer := range packet.Layers() {
 		//	fmt.Println(layer.LayerType())
 		//}
+		network := packet.NetworkLayer()
+		if network != nil {
+			fmt.Printf("%s: %s\n", device, network.NetworkFlow())
+		}
+		ppp := packet.Layer(layers.LayerTypePPP)
+		if ppp != nil {
+			fmt.Println(string(ppp.LayerPayload()))
+		}
 		p := Packet{Device:device}
 		ethernetLayer := packet.Layer(layers.LayerTypeEthernet)
 		if ethernetLayer != nil {
