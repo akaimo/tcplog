@@ -14,6 +14,8 @@ func main() {
 		log.Fatal(err)
 	}
 
+	ch := make(chan string)
+
 	for _, device := range devices {
 		fmt.Println("Name: " + device.Name)
 		fmt.Println("Description: " + device.Description)
@@ -22,9 +24,11 @@ func main() {
 			fmt.Println("- NetMask: " + address.Netmask.String())
 		}
 		fmt.Println("")
+
+		go logPacket(ch, device.Name)
 	}
 
-	logPacket("en0")
+	log.Println(<-ch)
 }
 
 type Packet struct {
@@ -35,7 +39,7 @@ type Packet struct {
 	DestinationMac string
 }
 
-func logPacket(device string) {
+func logPacket(ch chan string, device string) {
 	handle, err := pcap.OpenLive(device, int32(0xFFFF), true, pcap.BlockForever)
 	if err != nil {
 		log.Fatal(err)
@@ -61,4 +65,6 @@ func logPacket(device string) {
 		}
 		fmt.Printf("%+v\n", p)
 	}
+
+	ch <- device
 }
